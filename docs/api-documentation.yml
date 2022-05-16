@@ -1,0 +1,265 @@
+openapi: 3.0.0
+info:
+  title: Image gallery apis
+  description: Image gallery apis where you can store and retrieve your image data. Soon there will be image store provided with it too.
+  version: 0.0.1
+servers:
+  - url: http://localhost:3333/
+    description: Currently only local server supported. Server for testing
+  - url: TBC
+    description: Production server - still in progress creating domain and etc.
+
+paths:
+  /storage:
+    get:
+      summary: Get temporary pre-signed S3 url
+      responses:
+        '200':
+          description: A signed url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signedURL:
+                    type: string
+                    description: Pre-signed url
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /images:
+    get:
+      summary: Get all image records
+      responses:
+        '200':
+          description: A JSON array with image records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageRecord'
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /image:
+    get:
+      summary: Returns an image record by uuid
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: Image's record unique identifier
+          schema:
+            type: string
+            example: 110ec58a-a0f2-4ac4-8393-c866d813b8d1
+      responses:
+        '200':
+          description: A JSON image record object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageRecord'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Deletes an image record by uuid
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: Image's record unique identifier
+          schema:
+            type: string
+            example: 110ec58a-a0f2-4ac4-8393-c866d813b8d1
+      responses:
+        '200':
+          description: A JSON image record object
+          content:
+            application/json:
+              schema:
+                type: string
+                default: Record has been deleted successfully
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create an image record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImageRecord'
+      responses:
+        '200':
+          description: A JSON image record object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageRecord'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update an image record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateImageRecord'
+      responses:
+        '200':
+          description: A JSON image record object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageRecord'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+components:
+  schemas:
+    CreateImageRecord:
+      type: object
+      properties:
+        title:
+          type: string
+          example: A title of an image
+          description: Image title
+          required: true
+        description:
+          type: string
+          example: This portrait was painted in 1970 by a famous artist
+          description: A description that you want to appear above the image
+          required: false
+        fileLocation:
+          type: string
+          example: some url to an image
+          description: Location where image is stored
+          required: true
+    UpdateImageRecord:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 110ec58a-a0f2-4ac4-8393-c866d813b8d1
+          description: Unique identifier
+          required: true
+        title:
+          type: string
+          example: A title of an image
+          description: Image title
+          required: false
+        description:
+          type: string
+          example: This portrait was painted in 1970 by a famous artist
+          description: A description that you want to appear above the image
+          required: false
+        fileLocation:
+          type: string
+          example: some url to an image
+          description: Location where image is stored
+          required: false
+    ImageRecord:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 110ec58a-a0f2-4ac4-8393-c866d813b8d1
+          description: Unique identifier
+        title:
+          type: string
+          example: A title of an image
+          description: Image title
+        description:
+          type: string
+          example: This portrait was painted in 1970 by a famous artist
+          description: A description that you want to appear above the image
+        fileLocation:
+          type: string
+          example: some url to an image
+          description: Location where image is stored
+        dateAdded:
+          type: number
+          description: A timestamp when image record has been created in milliseconds
+        dateUpdated:
+          type: number
+          description: A timestamp when image record has been updated in milliseconds
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: error explanation message

@@ -1,0 +1,157 @@
+frameworkVersion: '3'
+configValidationMode: error
+service: images-api-serverless
+
+plugins:
+  - serverless-auto-swagger
+  - serverless-bundle
+  - serverless-s3-local
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3333
+    lambdaPort: 2333
+    noPrependStageInUrl: true
+  s3:
+    host: localhost
+    directory: ./s3local
+    port: 4569 # this is a default port but adding it explicitly just not to forget
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8009
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 2g
+
+provider:
+  name: aws
+  httpApi:
+    cors: true
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'dev'}
+  endpointType: regional
+  profile: ${opt:profile, 'dev'}
+  timeout: 20
+  region: ${opt:region, 'eu-west-2'}
+  environment:
+    APP_ENV: ${self:custom.stage, 'dev'}
+    IS_PRODUCTION: ${param:production, false}
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    NODE_OPTIONS: --enable-source-maps
+    IS_LOCAL: true
+    S3_BUCKET_NAME: images
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  createImage:
+    handler: src/image/handlers/create.handler
+    events:
+      - httpApi:
+          method: 'POST'
+          path: '/image'
+  updateImage:
+    handler: src/image/handlers/update.handler
+    events:
+      - httpApi:
+          method: 'PUT'
+          path: '/image'
+  getImage:
+    handler: src/image/handlers/get.handler
+    events:
+      - httpApi:
+          method: 'GET'
+          path: '/image/{uuid}'
+  deleteImage:
+    handler: src/image/handlers/delete.handler
+    events:
+      - httpApi:
+          method: 'DELETE'
+          path: '/image/{uuid}'
+  getImages:
+    handler: src/images/handlers/get.handler
+    events:
+      - httpApi:
+          method: 'GET'
+          path: '/images'
+  getUImageStorageLocation:
+    handler: src/storage/handlers/get.handler
+    events:
+      - httpApi:
+          method: 'GET'
+          path: '/storage'
+
+resources:
+  Resources:
+
+    s3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
+
+    imagesDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: uuid
+            AttributeType: S
+          - AttributeName: title
+            AttributeType: S
+          - AttributeName: path
+            AttributeType: S
+          - AttributeName: description
+            AttributeType: S
+          - AttributeName: dateAdded
+            AttributeType: N
+          - AttributeName: dateUpdated
+            AttributeType: N
+        KeySchema:
+          - AttributeName: uuid
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: "title"
+            KeySchema:
+              - AttributeName: "title"
+                KeyType: "HASH"
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: "description"
+            KeySchema:
+              - AttributeName: "description"
+                KeyType: "HASH"
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: "path"
+            KeySchema:
+              - AttributeName: "path"
+                KeyType: "HASH"
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: "dateAdded"
+            KeySchema:
+              - AttributeName: "dateAdded"
+                KeyType: "HASH"
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: "dateUpdated"
+            KeySchema:
+              - AttributeName: "dateUpdated"
+                KeyType: "HASH"
+            Projection:
+              ProjectionType: "ALL"
+        BillingMode: PAY_PER_REQUEST
