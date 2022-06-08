@@ -1,12 +1,12 @@
 import { handler } from './update'
-import { putRecord } from '../../transaction/databaseTransactions'
+import { putRecord } from '../../helpers/databaseTransactions'
 import { validateImageUpdateEvent } from '../../helpers/validateRequest'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 import { RequestValidationErrors } from '../../errors/RequestValidationErrors'
 import { RecordNotFound } from '../../errors/RecordNotFound'
 
-jest.mock('../../transaction/databaseTransactions')
-jest.mock('../../response/generateReturnValue')
+jest.mock('../../helpers/databaseTransactions')
+jest.mock('../../helpers/generateResponseValue')
 jest.mock('../../helpers/validateRequest')
 jest.mock('../../helpers/getEnvironmentVariables')
 

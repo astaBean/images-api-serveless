@@ -1,6 +1,8 @@
+import CONTENT_STRINGS from '../constants/contentStrings.json'
+
 class RecordNotFound extends Error {
   constructor () {
-    super('Image not found')
+    super(CONTENT_STRINGS.ERROR__IMAGE_NOT_FOUND)
   }
 }
 

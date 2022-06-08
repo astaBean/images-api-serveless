@@ -1,13 +1,13 @@
-import { handler } from './get'
-import { getRecord } from '../../transaction/databaseTransactions'
+import { handler } from './getImage'
+import { getRecord } from '../../helpers/databaseTransactions'
 import { validateUuidPathParam } from '../../helpers/validateRequest'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 import { RequestValidationErrors } from '../../errors/RequestValidationErrors'
 import { RecordNotFound } from '../../errors/RecordNotFound'
 
-jest.mock('../../transaction/databaseTransactions')
+jest.mock('../../helpers/databaseTransactions')
 jest.mock('../../helpers/validateRequest')
-jest.mock('../../response/generateReturnValue')
+jest.mock('../../helpers/generateResponseValue')
 jest.mock('../../helpers/getEnvironmentVariables')
 
 const minimalEvent = {
@@ -16,7 +16,7 @@ const minimalEvent = {
   }
 }
 
-describe('get request handler', () => {
+describe('getImage request handler', () => {
   beforeEach(() => {
     getRecord.mockClear()
     getFailureResponse.mockClear()

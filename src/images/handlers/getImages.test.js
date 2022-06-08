@@ -1,12 +1,12 @@
-import { handler } from './get'
-import { getRecords } from '../../transaction/databaseTransactions'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { handler } from './getImages'
+import { getRecords } from '../../helpers/databaseTransactions'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 
-jest.mock('../../transaction/databaseTransactions')
-jest.mock('../../response/generateReturnValue')
+jest.mock('../../helpers/databaseTransactions')
+jest.mock('../../helpers/generateResponseValue')
 jest.mock('../../helpers/getEnvironmentVariables')
 
-describe('get request handler', () => {
+describe('getImages request handler', () => {
   beforeAll(() => {
     console.error = jest.fn()
   })
@@ -50,9 +50,10 @@ describe('get request handler', () => {
   })
 
   describe('when an error', () => {
+    const errorThrown = new Error('foo')
     beforeEach(() => {
       getRecords.mockImplementationOnce(() => {
-        throw new Error('foo')
+        throw errorThrown
       })
       getFailureResponse.mockReturnValueOnce('foo')
     })
@@ -64,7 +65,7 @@ describe('get request handler', () => {
       expect(getRecords.mock.calls.length).toEqual(1)
       expect(getSuccessResponse.mock.calls.length).toEqual(0)
       expect(getFailureResponse.mock.calls.length).toEqual(1)
-      expect(getFailureResponse.mock.calls[0]).toEqual(['foo', 500])
+      expect(getFailureResponse.mock.calls[0][0]).toEqual(errorThrown)
       expect(console.error.mock.calls.length).toEqual(1)
     })
   })

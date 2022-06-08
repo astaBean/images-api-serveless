@@ -1,6 +1,8 @@
+import CONTENT_STRINGS from '../constants/contentStrings.json'
+
 class FailedToUploadToS3Error extends Error {
   constructor () {
-    super('Image failed to upload to s3')
+    super(CONTENT_STRINGS.ERROR__IMAGE_FAILED_TO_UPLOAD_TO_S3)
   }
 }
 

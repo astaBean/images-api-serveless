@@ -1,7 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { RecordNotFound } from '../errors/RecordNotFound'
 import { randomUUID } from 'crypto'
-import { isLocalEnvironment, getAwsRegion, getDynamoDbTableName } from '../helpers/getEnvironmentVariables'
+import { isLocalEnvironment, getAwsRegion, getDynamoDbTableName } from './getEnvironmentVariables'
 
 const _getDbClient = () => {
   const endpoint = isLocalEnvironment() === 'true' ? 'http://localhost:8009' : undefined

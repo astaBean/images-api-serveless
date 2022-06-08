@@ -1,13 +1,13 @@
 import { handler } from './delete'
-import { deleteRecord } from '../../transaction/databaseTransactions'
+import { deleteRecord } from '../../helpers/databaseTransactions'
 import { validateUuidPathParam } from '../../helpers/validateRequest'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 import { RecordNotFound } from '../../errors/RecordNotFound'
 import { RequestValidationErrors } from '../../errors/RequestValidationErrors'
 
-jest.mock('../../transaction/databaseTransactions')
+jest.mock('../../helpers/databaseTransactions')
 jest.mock('../../helpers/validateRequest')
-jest.mock('../../response/generateReturnValue')
+jest.mock('../../helpers/generateResponseValue')
 jest.mock('../../helpers/getEnvironmentVariables')
 
 const minimalEvent = {

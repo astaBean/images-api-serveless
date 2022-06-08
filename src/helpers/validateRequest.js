@@ -1,4 +1,4 @@
-import { imageCreateSchema, imageUpdateSchema, pathParamsWithUuidSchema } from '../image/schemas/image.schema'
+import { imageCreateSchema, imageUpdateSchema, pathParamsWithUuidSchema } from '../images/schemas/image.schema'
 import { RequestValidationErrors } from '../errors/RequestValidationErrors'
 import { RequestValidationError } from '../errors/RequestValidationError'
 

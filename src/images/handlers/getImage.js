@@ -1,6 +1,6 @@
-import { getRecord } from '../../transaction/databaseTransactions'
+import { getRecord } from '../../helpers/databaseTransactions'
 import { validateUuidPathParam } from '../../helpers/validateRequest'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 
 const handler = async (event) => {
   try {

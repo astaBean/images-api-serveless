@@ -1,7 +1,7 @@
-import { imageCreateSchema, imageUpdateSchema, pathParamsWithUuidSchema } from '../image/schemas/image.schema'
+import { imageCreateSchema, imageUpdateSchema, pathParamsWithUuidSchema } from '../images/schemas/image.schema'
 import { validateImageCreateEvent, validateImageUpdateEvent, validateUuidPathParam } from './validateRequest'
 
-jest.mock('../image/schemas/image.schema')
+jest.mock('../images/schemas/image.schema')
 
 describe('validateRequest', () => {
   beforeAll(() => {

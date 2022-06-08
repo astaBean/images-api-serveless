@@ -59,31 +59,31 @@ provider:
 
 functions:
   createImage:
-    handler: src/image/handlers/create.handler
+    handler: src/images/handlers/create.handler
     events:
       - httpApi:
           method: 'POST'
-          path: '/image'
+          path: '/images'
   updateImage:
-    handler: src/image/handlers/update.handler
+    handler: src/images/handlers/update.handler
     events:
       - httpApi:
           method: 'PUT'
-          path: '/image'
+          path: '/images'
   getImage:
-    handler: src/image/handlers/get.handler
+    handler: src/images/handlers/getImage.handler
     events:
       - httpApi:
           method: 'GET'
-          path: '/image/{uuid}'
+          path: '/images/{uuid}'
   deleteImage:
-    handler: src/image/handlers/delete.handler
+    handler: src/images/handlers/delete.handler
     events:
       - httpApi:
           method: 'DELETE'
-          path: '/image/{uuid}'
+          path: '/images/{uuid}'
   getImages:
-    handler: src/images/handlers/get.handler
+    handler: src/images/handlers/getImages.handler
     events:
       - httpApi:
           method: 'GET'

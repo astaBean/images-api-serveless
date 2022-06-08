@@ -1,12 +1,12 @@
-import { putRecord } from '../../transaction/databaseTransactions'
-import { validateImageUpdateEvent } from '../../helpers/validateRequest'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { putRecord } from '../../helpers/databaseTransactions'
+import { validateImageCreateEvent } from '../../helpers/validateRequest'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 
 const handler = async (event) => {
   try {
     console.info(`Event with body [${JSON.stringify(event.body)}]`)
     const eventBody = JSON.parse(event.body)
-    validateImageUpdateEvent(eventBody)
+    validateImageCreateEvent(eventBody)
     const item = await putRecord(eventBody.uuid, eventBody.title, eventBody.description, eventBody.fileLocation)
     return getSuccessResponse(item)
   } catch (error) {

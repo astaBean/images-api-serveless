@@ -1,9 +1,9 @@
 import { handler } from './get'
 import { getSignedUrlForUpload } from '../../helpers/getSignedUrlForUpload'
-import { getFailureResponse, getSuccessResponse } from '../../response/generateReturnValue'
+import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 
 jest.mock('../../helpers/getSignedUrlForUpload')
-jest.mock('../../response/generateReturnValue')
+jest.mock('../../helpers/generateResponseValue')
 jest.mock('../../helpers/getEnvironmentVariables')
 
 describe('get request handler', () => {
@@ -36,9 +36,10 @@ describe('get request handler', () => {
   })
 
   describe('when error thrown', () => {
+    const errorThrown = new Error('error message')
     beforeEach(() => {
       getSignedUrlForUpload.mockImplementationOnce(() => {
-        throw new Error('error message')
+        throw errorThrown
       })
       getFailureResponse.mockReturnValueOnce('foo')
     })
@@ -49,7 +50,7 @@ describe('get request handler', () => {
       expect(res).toEqual('foo')
       expect(getSuccessResponse.mock.calls.length).toEqual(0)
       expect(getFailureResponse.mock.calls.length).toEqual(1)
-      expect(getFailureResponse.mock.calls[0]).toEqual(['error message', 500])
+      expect(getFailureResponse.mock.calls[0][0]).toEqual(errorThrown)
       expect(console.error.mock.calls.length).toEqual(1)
     })
   })
