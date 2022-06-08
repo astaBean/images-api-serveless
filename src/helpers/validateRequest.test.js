@@ -146,8 +146,6 @@ describe('validateRequest', () => {
         const res = validateImageCreateEvent({ uuid: 'foo' })
         expect(res).toEqual({ uuid: 'foo' })
         expect(imageCreateSchema.validate.mock.calls.length).toEqual(1)
-        // expect(imageUpdateSchema.validate.mock.calls.length).toEqual(0)
-        // expect(pathParamsWithUuidSchema.validate.mock.calls.length).toEqual(0)
       })
     })
   })

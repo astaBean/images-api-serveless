@@ -118,35 +118,20 @@ describe('databaseTransactions', () => {
       })
     })
 
-    describe('when no Item object returned', () => {
+    describe('when error thrown while retrieving a record', () => {
+      const thrownError = new Error('some error')
       beforeEach(() => {
-        awsSdkPromiseResponseForGet.mockReturnValueOnce(Promise.resolve({}))
+        awsSdkPromiseResponseForGet.mockImplementationOnce(() => {
+          throw thrownError
+        })
       })
 
-      it('should throw RecordNotFound error', async () => {
+      it('should throw an error', async () => {
         try {
+          expect.assertions(3)
           await getRecord('some-uuid')
         } catch (error) {
-          expect.assertions(3)
-          expect(error).toEqual(new RecordNotFound())
-          expect(documentClient.get.mock.calls.length).toEqual(1)
-          expect(console.info.mock.calls.length).toEqual(1)
-        }
-      })
-    })
-
-    describe('when no images returned', () => {
-      beforeEach(() => {
-        awsSdkPromiseResponseForGet.mockReturnValueOnce(
-          Promise.resolve({ Item: {} }))
-      })
-
-      it('should throw RecordNotFound error', async () => {
-        try {
-          await getRecord('some-uuid')
-        } catch (error) {
-          expect.assertions(3)
-          expect(error).toEqual(new RecordNotFound())
+          expect(error).toEqual(thrownError)
           expect(documentClient.get.mock.calls.length).toEqual(1)
           expect(console.info.mock.calls.length).toEqual(1)
         }
@@ -260,6 +245,12 @@ describe('databaseTransactions', () => {
     })
 
     describe('when adding a valid record with uuid', () => {
+      const existingRecord = {
+        Item: {
+          uuid: 'existing'
+        }
+      }
+
       const record = {
         Item: {
           uuid: 'foo'
@@ -267,9 +258,11 @@ describe('databaseTransactions', () => {
       }
 
       beforeEach(() => {
-        awsSdkPromiseResponseForGet.mockImplementationOnce(() => {
-          return Promise.resolve(record)
-        })
+        awsSdkPromiseResponseForGet
+          .mockReturnValueOnce(Promise.resolve(existingRecord))
+          .mockImplementationOnce(() => {
+            return Promise.resolve(record)
+          })
       })
 
       it('should return added record', async () => {
@@ -277,8 +270,8 @@ describe('databaseTransactions', () => {
         expect.assertions(4)
         expect(res).toEqual(record.Item)
         expect(documentClient.put.mock.calls.length).toEqual(1)
-        expect(documentClient.get.mock.calls.length).toEqual(1)
-        expect(console.info.mock.calls.length).toEqual(4)
+        expect(documentClient.get.mock.calls.length).toEqual(2)
+        expect(console.info.mock.calls.length).toEqual(6)
       })
     })
 
@@ -291,7 +284,7 @@ describe('databaseTransactions', () => {
 
       it('should throw error ', async () => {
         try {
-          await putRecord('foo')
+          await putRecord(undefined, 'title', 'description', 'path')
         } catch (error) {
           expect.assertions(5)
           expect(error.message).toEqual('error')

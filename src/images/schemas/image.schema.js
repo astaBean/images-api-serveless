@@ -16,7 +16,6 @@ const imageUpdateSchema = Joi.object({
 
   fileLocation: Joi.string()
     .uri()
-    .required()
 }).options({ abortEarly: false })
 
 const imageCreateSchema = Joi.object({

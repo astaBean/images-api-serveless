@@ -47,7 +47,7 @@ This feature I am still working on but the idea would be that a client gets pre-
 Currently, I only have an api which returns pre-signed s3 bucket url, but I have yet to set the permissions for it to be able to store files. 
 The idea would be to create small client application with react to call the api that return pre-signed s3 url and then store there an image. Afterwards call create or update image record. 
 
-**Note:** I could have created an api gateway to point to s3 or lambda to upload an image, but it does come with its limitations like max payload size is 10mb which is very small for an image. 
+**Note:** I could have created an api gateway to point to s3 or lambda to upload an image which would have been quite easier to do, but it does come with its limitations like max payload size is 10mb which is very small for an image. 
 
 # Run the application
 There are two ways to run this application:
@@ -78,7 +78,7 @@ sls dynamodb start &
 
 To create a schema run command bellow in a separate shell terminal window:
 ```shell
-`sls dynamodb migrate
+sls dynamodb migrate
 ````
 
 Then build the app locally by running command
