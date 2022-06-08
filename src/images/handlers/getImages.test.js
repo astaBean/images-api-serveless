@@ -37,7 +37,7 @@ describe('getImages request handler', () => {
       getSuccessResponse.mockReturnValueOnce('foo')
     })
 
-    it('should successful response', async () => {
+    it('should return successful response', async () => {
       expect.assertions(6)
       const res = await handler()
       expect(res).toEqual('foo')

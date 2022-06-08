@@ -1,5 +1,5 @@
 import { handler } from './update'
-import { putRecord } from '../../helpers/databaseTransactions'
+import { updateRecord } from '../../helpers/databaseTransactions'
 import { validateImageUpdateEvent } from '../../helpers/validateRequest'
 import { getFailureResponse, getSuccessResponse } from '../../helpers/generateResponseValue'
 import { RequestValidationErrors } from '../../errors/RequestValidationErrors'
@@ -20,7 +20,7 @@ describe('update request handler', () => {
   })
 
   beforeEach(() => {
-    putRecord.mockClear()
+    updateRecord.mockClear()
     validateImageUpdateEvent.mockClear()
     getFailureResponse.mockClear()
     getSuccessResponse.mockClear()
@@ -39,7 +39,7 @@ describe('update request handler', () => {
 
     beforeEach(() => {
       validateImageUpdateEvent.mockReturnValueOnce({})
-      putRecord.mockReturnValueOnce(Promise.resolve(returnedMockValue))
+      updateRecord.mockReturnValueOnce(Promise.resolve(returnedMockValue))
       getSuccessResponse.mockReturnValueOnce('foo')
     })
 
@@ -47,7 +47,7 @@ describe('update request handler', () => {
       const res = await handler(minimalEvent)
       expect.assertions(7)
       expect(res).toEqual('foo')
-      expect(putRecord.mock.calls.length).toEqual(1)
+      expect(updateRecord.mock.calls.length).toEqual(1)
       expect(getSuccessResponse.mock.calls.length).toEqual(1)
       expect(getSuccessResponse.mock.calls[0][0]).toEqual(returnedMockValue)
       expect(getFailureResponse.mock.calls.length).toEqual(0)
@@ -72,7 +72,7 @@ describe('update request handler', () => {
       expect.assertions(8)
       expect(res.statusCode).toEqual(400)
       expect(res.body).toEqual('{message:["foo1", "foo2"]}')
-      expect(putRecord.mock.calls.length).toEqual(0)
+      expect(updateRecord.mock.calls.length).toEqual(0)
       expect(getFailureResponse.mock.calls.length).toEqual(1)
       expect(getFailureResponse.mock.calls[0][0]).toEqual(expectedInputErr)
       expect(getSuccessResponse.mock.calls.length).toEqual(0)
@@ -85,7 +85,7 @@ describe('update request handler', () => {
     const expectedInputErr = new RecordNotFound()
     beforeEach(() => {
       validateImageUpdateEvent.mockReturnValueOnce({})
-      putRecord.mockImplementationOnce(() => {
+      updateRecord.mockImplementationOnce(() => {
         throw expectedInputErr
       })
       getFailureResponse.mockReturnValueOnce('foo')
@@ -94,7 +94,7 @@ describe('update request handler', () => {
       const res = await handler(minimalEvent)
       expect.assertions(7)
       expect(res).toEqual('foo')
-      expect(putRecord.mock.calls.length).toEqual(1)
+      expect(updateRecord.mock.calls.length).toEqual(1)
       expect(getFailureResponse.mock.calls.length).toEqual(1)
       expect(getFailureResponse.mock.calls[0][0]).toEqual(expectedInputErr)
       expect(getSuccessResponse.mock.calls.length).toEqual(0)

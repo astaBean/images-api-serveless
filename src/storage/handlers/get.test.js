@@ -44,7 +44,7 @@ describe('get request handler', () => {
       getFailureResponse.mockReturnValueOnce('foo')
     })
 
-    it('should failure response', async () => {
+    it('should return failure response', async () => {
       expect.assertions(5)
       const res = await handler()
       expect(res).toEqual('foo')

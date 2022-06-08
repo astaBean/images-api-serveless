@@ -3,10 +3,10 @@ import {
   awsSdkPromiseResponseForScan,
   awsSdkPromiseResponseForGet,
   awsSdkPromiseResponseForDelete,
-  awsSdkPromiseResponseForPut
+  awsSdkPromiseResponseForPut, awsSdkPromiseResponseForUpdate
 } from '../../__mocks__/aws-sdk/clients/dynamodb'
 
-import { getRecords, getRecord, deleteRecord, putRecord } from './databaseTransactions'
+import { getRecords, getRecord, deleteRecord, putRecord, updateRecord } from './databaseTransactions'
 import { RecordNotFound } from '../errors/RecordNotFound'
 
 jest.mock('../helpers/getEnvironmentVariables')
@@ -17,6 +17,11 @@ describe('databaseTransactions', () => {
   beforeAll(() => {
     console.info = jest.fn()
     console.error = jest.fn()
+  })
+
+  beforeEach(() => {
+    console.error.mockClear()
+    console.info.mockClear()
   })
 
   afterAll(() => {
@@ -240,17 +245,11 @@ describe('databaseTransactions', () => {
         expect(res).toEqual(record.Item)
         expect(documentClient.put.mock.calls.length).toEqual(1)
         expect(documentClient.get.mock.calls.length).toEqual(1)
-        expect(console.info.mock.calls.length).toEqual(5)
+        expect(console.info.mock.calls.length).toEqual(4)
       })
     })
 
     describe('when adding a valid record with uuid', () => {
-      const existingRecord = {
-        Item: {
-          uuid: 'existing'
-        }
-      }
-
       const record = {
         Item: {
           uuid: 'foo'
@@ -259,10 +258,7 @@ describe('databaseTransactions', () => {
 
       beforeEach(() => {
         awsSdkPromiseResponseForGet
-          .mockReturnValueOnce(Promise.resolve(existingRecord))
-          .mockImplementationOnce(() => {
-            return Promise.resolve(record)
-          })
+          .mockReturnValueOnce(Promise.resolve(record))
       })
 
       it('should return added record', async () => {
@@ -270,8 +266,8 @@ describe('databaseTransactions', () => {
         expect.assertions(4)
         expect(res).toEqual(record.Item)
         expect(documentClient.put.mock.calls.length).toEqual(1)
-        expect(documentClient.get.mock.calls.length).toEqual(2)
-        expect(console.info.mock.calls.length).toEqual(6)
+        expect(documentClient.get.mock.calls.length).toEqual(1)
+        expect(console.info.mock.calls.length).toEqual(4)
       })
     })
 
@@ -289,6 +285,86 @@ describe('databaseTransactions', () => {
           expect.assertions(5)
           expect(error.message).toEqual('error')
           expect(documentClient.put.mock.calls.length).toEqual(1)
+          expect(documentClient.get.mock.calls.length).toEqual(0)
+          expect(console.info.mock.calls.length).toEqual(1)
+          expect(console.error.mock.calls.length).toEqual(1)
+        }
+      })
+    })
+  })
+
+  describe('updateRecord', () => {
+    beforeEach(() => {
+      documentClient.get.mockClear()
+      documentClient.update.mockClear()
+      awsSdkPromiseResponseForUpdate.mockClear()
+      awsSdkPromiseResponseForGet.mockClear()
+    })
+
+    afterEach(() => {
+      awsSdkPromiseResponseForUpdate.mockReset()
+      awsSdkPromiseResponseForGet.mockReset()
+      console.info.mockReset()
+    })
+
+    describe('when adding a valid record without uuid', () => {
+      const record = {
+        Item: {
+          uuid: 'foo'
+        }
+      }
+
+      beforeEach(() => {
+        awsSdkPromiseResponseForUpdate.mockReturnValueOnce(Promise.resolve())
+        awsSdkPromiseResponseForGet.mockReturnValueOnce(Promise.resolve(record))
+      })
+
+      it('should return a record', async () => {
+        expect.assertions(4)
+        const res = await updateRecord(undefined, 'title', 'description', 'path')
+        expect(res).toEqual(record.Item)
+        expect(documentClient.update.mock.calls.length).toEqual(1)
+        expect(documentClient.get.mock.calls.length).toEqual(1)
+        expect(console.info.mock.calls.length).toEqual(4)
+      })
+    })
+
+    describe('when adding a valid record with uuid', () => {
+      const record = {
+        Item: {
+          uuid: 'foo'
+        }
+      }
+
+      beforeEach(() => {
+        awsSdkPromiseResponseForGet
+          .mockReturnValueOnce(Promise.resolve(record))
+      })
+
+      it('should return added record', async () => {
+        const res = await updateRecord('uuid', 'title', 'description', 'path')
+        expect.assertions(4)
+        expect(res).toEqual(record.Item)
+        expect(documentClient.update.mock.calls.length).toEqual(1)
+        expect(documentClient.get.mock.calls.length).toEqual(1)
+        expect(console.info.mock.calls.length).toEqual(4)
+      })
+    })
+
+    describe('when error has been thrown', () => {
+      beforeEach(() => {
+        awsSdkPromiseResponseForUpdate.mockImplementationOnce(() => {
+          throw new Error('error')
+        })
+      })
+
+      it('should throw error ', async () => {
+        try {
+          await updateRecord(undefined, 'title', 'description', 'path')
+        } catch (error) {
+          expect.assertions(5)
+          expect(error.message).toEqual('error')
+          expect(documentClient.update.mock.calls.length).toEqual(1)
           expect(documentClient.get.mock.calls.length).toEqual(0)
           expect(console.info.mock.calls.length).toEqual(1)
           expect(console.error.mock.calls.length).toEqual(1)

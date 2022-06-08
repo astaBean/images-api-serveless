@@ -56,9 +56,17 @@ const deleteRecord = async (uuid) => {
 }
 
 const putRecord = async (recordUuid, title, description, path) => {
+  const now = new Date().getTime()
   const params = {
     TableName: getDynamoDbTableName(),
-    Item: await _getParamsForPut(recordUuid, title, description, path)
+    Item: {
+      uuid: randomUUID(),
+      title,
+      description,
+      path,
+      dateAdded: now,
+      dateUpdated: now
+    }
   }
 
   try {
@@ -72,28 +80,59 @@ const putRecord = async (recordUuid, title, description, path) => {
   }
 }
 
-const _getParamsForPut = async (recordUuid, title, description, path) => {
-  const now = new Date().getTime()
+const updateRecord = async (recordUuid, title, description, path) => {
+  try {
+    const params = _getUpdateRecordParams(recordUuid, title, description, path)
+    console.info(`updateRecord params ${JSON.stringify(params)}`)
+    await ddb.update(params).promise()
+    console.info('record was successfully updated')
+    return await getRecord(recordUuid)
+  } catch (error) {
+    console.error('Error in updateRecord', error)
+    throw error
+  }
+}
 
-  if (recordUuid !== undefined) {
-    const definedValueInDb = await getRecord(recordUuid)
-    return {
-      uuid: recordUuid,
-      title: title === undefined ? definedValueInDb.title : title,
-      description: description === undefined ? definedValueInDb.description : description,
-      path: path === undefined ? definedValueInDb.path : path,
-      dateAdded: definedValueInDb.dateAdded,
-      dateUpdated: now
-    }
+const _getUpdateRecordParams = (recordUuid, title, description, path) => {
+  const variablesToUpdate = {}
+
+  if (title !== undefined) {
+    variablesToUpdate.title = title
   }
 
+  if (description !== undefined) {
+    variablesToUpdate.description = description
+  }
+
+  if (path !== undefined) {
+    variablesToUpdate.path = path
+  }
+
+  // In here there should be logic if variablesToUpdate empty then we can return specific error
+
+  const keys = Object.keys(variablesToUpdate)
+  const values = Object.values(variablesToUpdate)
+
+  const character = ':x'
+  const updateExpressions = []
+  keys.forEach((element, index) => {
+    updateExpressions[index] = ` ${element} = ${character}${index}`
+  })
+
+  const expressionAttributes = {}
+  values.forEach((value, index) => {
+    expressionAttributes[`${character}${index}`] = value
+  })
+
+  const updateExpressionString = `set ${updateExpressions.toString()}`
+
   return {
-    uuid: randomUUID(),
-    title,
-    description,
-    path,
-    dateAdded: now,
-    dateUpdated: now
+    TableName: getDynamoDbTableName(),
+    Key: {
+      uuid: recordUuid
+    },
+    UpdateExpression: updateExpressionString,
+    ExpressionAttributeValues: expressionAttributes
   }
 }
 
@@ -101,5 +140,6 @@ export {
   getRecords,
   getRecord,
   deleteRecord,
-  putRecord
+  putRecord,
+  updateRecord
 }
