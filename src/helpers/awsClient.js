@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-import { isLocalEnvironment, getAwsRegion } from './getEnvironmentVariables'
+import { getAwsRegion, isLocalEnvironment } from './getEnvironmentVariables'
 
 const getS3Client = () => {
   const endpoint = isLocalEnvironment() ? 'http://localhost:4569' : undefined

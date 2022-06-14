@@ -6,9 +6,5 @@
     },
     "extends": [
         "standard"
-    ],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    }
+    ]
 }

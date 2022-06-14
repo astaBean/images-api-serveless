@@ -4,7 +4,6 @@ const getS3BucketName = () => {
   if (S3_BUCKET_NAME === undefined) {
     throw new Error('S3_BUCKET_NAME env variable should be defined')
   }
-
   return S3_BUCKET_NAME
 }
 

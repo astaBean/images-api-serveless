@@ -3,7 +3,7 @@ This is a small api first serverless project that I have been working for my own
 
 This repository contains of very small applications (lambdas) that can store image data like title, description, path to the file.
 It has built-in basic CRUD apis that stores data into dynamoDb. 
-This small mono repository is easily deployable to AWS using serverless framework, and it is fully functional locally too.
+This small repository is easily deployable to AWS using serverless framework, and it is fully functional locally too.
 This is not an image store (please read below about `image store`) but more of an image gallery.
 
 ## Prerequisites
@@ -11,7 +11,7 @@ Make sure you have installed following dependencies:
 - git - installation instructions can be found [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - node 16 or higher and npm package manager - installation instructions can be found [here](https://nodejs.dev/download/package-manager/)
 - yarn - installation instructions can be found [here](https://classic.yarnpkg.com/lang/en/docs/install/#debian-stable) - you do not have to use `yarn`, and instead you can just use `npm`
-- aws credentials - used for deploying to your AWS account. You will need AWS account and configure your credentials and profile on your local machine or ci. More info can be found [here](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
+- aws account and credentials - used for deploying to your AWS account. You will need AWS account and configure your credentials and profile on your local machine or ci. More info can be found [here](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
   and [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 
 **If running application locally you will need:**
@@ -20,6 +20,10 @@ Make sure you have installed following dependencies:
 
 ## Currently available apis
 These are currently available apis see [api documentation](./docs/api-documentation.yml)
+
+## Add .env.dev file with parameters
+To be able to deploy or build all serverless environment locally you will need `.env.dev` file where word `dev` is stage defined in serverless.yml.
+Please refer to an example [file](./example.env.dev) which parameters you need to set. I use 
 
 ## Set a correct node version and install dependencies
 Run command below in this repository in your shell terminal
@@ -57,7 +61,9 @@ There are two ways to run this application:
 See sections below for each method
 
 ## Run application in your AWS account
-See `Prerequisites` section if you haven't set up your AWS account locally. Afterwards install dependencies and run command bellow to start deployment:
+See `Prerequisites` section if you haven't set up your AWS account locally.
+
+To start deployment to AWS run command bellow:
 
 ```shell
 sls deploy
@@ -66,7 +72,15 @@ sls deploy
 and wait for deployment to finish.
 
 ## Run application locally
-Install dependencies and then to run the application locally you will need first to start local dynamoDb in a separate shell terminal window:
+Install dependencies and then to run the application locally.
+
+For local stack you will need first to install and start local dynamoDb instance in a separate shell terminal window.
+To install dynamodb locally run command below:
+```shell
+sls dynamodb install
+```
+
+To start dynamodb run:
 ```shell
 sls dynamodb start
 ```
@@ -75,6 +89,7 @@ To start dynamoDb in detached mode you can run command bellow as a workaround (c
 ```shell
 sls dynamodb start &
 ```
+If starting dynamodb in detached mode press `Enter` after you ran the command to go back to terminal shell
 
 To create a schema run command bellow in a separate shell terminal window:
 ```shell
