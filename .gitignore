@@ -102,6 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
-.idea/
+
+# Other
 .webpack/
 .yarn/
+
+
+# Intellij
+.idea/
+*.iml

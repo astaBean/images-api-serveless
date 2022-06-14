@@ -58,7 +58,7 @@ provider:
     IS_PRODUCTION: ${env:IS_PRODUCTION, false}
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
     NODE_OPTIONS: --enable-source-maps
-    IS_LOCAL: ${env.IS_LOCAL, true}
+    IS_LOCAL: ${env:IS_LOCAL, true}
     S3_BUCKET_NAME: images
   iam:
     role:

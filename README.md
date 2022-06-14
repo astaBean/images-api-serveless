@@ -17,11 +17,10 @@ Make sure you have installed following dependencies:
 **If running application locally you will need:**
 - java version 8 or above - java is used to run local dynamoDb. You can read about it [here](https://github.com/99x/serverless-dynamodb-local) and installation can be found [here](https://www.oracle.com/java/technologies/downloads/)
 
-
 ## Currently available apis
 These are currently available apis see [api documentation](./docs/api-documentation.yml)
 
-## Add .env.dev file with parameters
+## For running locally or deploying remote from local environment add .env.dev file with parameters
 To be able to deploy or build all serverless environment locally you will need `.env.dev` file where word `dev` is stage defined in serverless.yml.
 Please refer to an example [file](./example.env.dev) which parameters you need to set. I use 
 
