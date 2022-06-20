@@ -20,13 +20,13 @@
   },
   "homepage": "https://github.com/astaBean/images-api-serverless#readme",
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "aws-sdk": "^2.1154.0",
     "joi": "^17.6.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.18.2",
     "@babel/eslint-parser": "^7.18.2",
     "babel-eslint": "^10.1.0",
     "eslint-config-standard": "^17.0.0",
